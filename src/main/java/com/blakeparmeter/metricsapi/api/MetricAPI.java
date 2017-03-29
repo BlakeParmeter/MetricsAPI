@@ -5,10 +5,10 @@
  */
 package com.blakeparmeter.metricsapi.api;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -24,9 +24,8 @@ public class MetricAPI {
     //@Autowired MemberRepository memberRepo;
     //MessageService messageService = new MessageService();
     
-    //TODO: Remove
     @RequestMapping("/test")
-    public void test(@RequestBody Object model){
+    public void test(){
     
         System.out.println("test message");
         /*
