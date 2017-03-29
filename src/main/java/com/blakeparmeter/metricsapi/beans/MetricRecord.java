@@ -11,4 +11,13 @@ package com.blakeparmeter.metricsapi.beans;
  */
 public class MetricRecord {
     
+    private String id;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 }

@@ -5,7 +5,9 @@
  */
 package com.blakeparmeter.metricsapi.api;
 
+import com.blakeparmeter.metricsapi.beans.MetricRecord;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
@@ -16,13 +18,17 @@ import org.springframework.web.bind.annotation.RestController;
  * Complex logic should be moved outside of this class.
  * @author Blake
  */
-
 @RestController
 @EnableAutoConfiguration
 public class MetricAPI {
     
     //@Autowired MemberRepository memberRepo;
     //MessageService messageService = new MessageService();
+    
+    @RequestMapping("/addMetric")
+    public ResponseEntity<?> addMetric(@RequestBody MetricRecord record){
+        return ResponseEntity.ok().build();
+    }
     
     @RequestMapping("/test")
     public void test(){
