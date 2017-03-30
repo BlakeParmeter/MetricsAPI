@@ -5,10 +5,27 @@
  */
 package com.blakeparmeter.metricsapi.beans;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  *
  * @author Blake
  */
+@Entity
+@Getter @Setter
 public class MetricValue {
     
+    @Id @GeneratedValue(strategy=GenerationType.AUTO)
+    private Long id;
+    
+    @ManyToOne
+    private Metric metric;
+    
+    private double value;
 }

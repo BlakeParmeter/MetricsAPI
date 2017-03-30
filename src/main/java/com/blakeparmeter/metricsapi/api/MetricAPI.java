@@ -5,12 +5,14 @@
  */
 package com.blakeparmeter.metricsapi.api;
 
-import com.blakeparmeter.metricsapi.beans.MetricRecord;
+import com.blakeparmeter.metricsapi.beans.Metric;
+import com.blakeparmeter.metricsapi.controllers.MetricController;
+import com.blakeparmeter.metricsapi.repository.MetricRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -22,24 +24,25 @@ import org.springframework.web.bind.annotation.RestController;
 @EnableAutoConfiguration
 public class MetricAPI {
     
-    //@Autowired MemberRepository memberRepo;
-    //MessageService messageService = new MessageService();
+    @Autowired 
+    private MetricController metricController;
     
     @RequestMapping("/addMetric")
-    public ResponseEntity<?> addMetric(@RequestBody MetricRecord record){
+    public ResponseEntity<?> addMetric(@RequestBody Metric record){
+        if(record.getName() == null || record.getName().isEmpty()){
+            return ResponseEntity.badRequest().body("The name is required and cannot be empty.");
+        }
+        if(record.getUnits()== null || record.getUnits().isEmpty()){
+            return ResponseEntity.badRequest().body("The name is required and cannot be empty.");
+        }
+        metricController.addMetric(record);
         return ResponseEntity.ok().build();
     }
     
     @RequestMapping("/test")
-    public void test(){
-    
-        System.out.println("test message");
-        /*
-        Response response = new Response();
-        response.setStatus(Response.Status.SUCCESS);
-        response.setMessage(model.toString());
-        return response;
-                */
+    public ResponseEntity<?> test(){
+        System.out.println("Reciving test message...");
+        return ResponseEntity.ok("test");
     }
 }
     
