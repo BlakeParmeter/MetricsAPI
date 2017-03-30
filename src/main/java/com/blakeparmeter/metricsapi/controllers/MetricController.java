@@ -6,8 +6,6 @@
 package com.blakeparmeter.metricsapi.controllers;
 
 import com.blakeparmeter.metricsapi.beans.Metric;
-import com.blakeparmeter.metricsapi.repository.MetricRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 /**
@@ -17,12 +15,8 @@ import org.springframework.stereotype.Controller;
 @Controller
 public class MetricController {
     
-    //@Autowired 
-    //MetricRepository metricRepo;
-    
     public Metric addMetric(Metric metric){
         System.out.println("Adding a metric!");
         return metric;
-        //return metricRepo.save(metric);
     }
 }
