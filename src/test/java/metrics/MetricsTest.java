@@ -181,12 +181,6 @@ public class MetricsTest {
         metricValueToAdd.setMetricId(validID);
         metricValueToAdd.setValue(null);
         sendMetricValue(metricValueToAdd, status().isBadRequest());
-        metricValueToAdd.setValue(Double.NEGATIVE_INFINITY);
-        sendMetricValue(metricValueToAdd, status().isBadRequest());
-        metricValueToAdd.setValue(Double.POSITIVE_INFINITY);
-        sendMetricValue(metricValueToAdd, status().isBadRequest());
-        metricValueToAdd.setValue(Double.NaN);
-        sendMetricValue(metricValueToAdd, status().isBadRequest());
     }
     
     /* Testing Helpers */

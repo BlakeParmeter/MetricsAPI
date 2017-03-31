@@ -32,23 +32,17 @@ public class MetricAPI {
     
     @RequestMapping(value="/addMetric", method=RequestMethod.POST)
     public ResponseEntity<?> addMetric(@Validated @RequestBody Metric record){
-        Metric metricAdded = metricController.addMetric(record);
-        return ResponseEntity.ok(metricAdded);
+        return ResponseEntity.ok(metricController.addMetric(record));
     }
     
     @RequestMapping(value="/addMetricValue", method=RequestMethod.POST)
     public ResponseEntity<?> addMetricValue(@Validated @RequestBody MetricValue record){
-        MetricValue metricAdded = metricController.addMetricValue(record);
-        return ResponseEntity.ok(metricAdded);
+        return ResponseEntity.ok(metricController.addMetricValue(record));
     }
     
     @RequestMapping(value="/getStatistics/{metricId}", method=RequestMethod.GET)
     public ResponseEntity<?> getStatistics(@PathVariable Long metricId){
-        try{
-            return ResponseEntity.ok(metricController.getStatistics(metricId));
-        }catch(Exception ex){
-            return ResponseEntity.badRequest().body(ex);
-        }
+        return ResponseEntity.ok(metricController.getStatistics(metricId));
     }
 }
     
