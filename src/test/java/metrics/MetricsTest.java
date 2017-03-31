@@ -103,15 +103,16 @@ public class MetricsTest {
     @Test
     public void getValidStatistics() throws Exception{
         
+        //Builds a valid metric
         Metric metricToAdd = new Metric();
         metricToAdd.setName("Test Metric");
         metricToAdd.setUnits("Test Units");
         Long id = sendMetricGetResult(metricToAdd).getId();
         
+        //Adds valid metric values
         MetricValue metricValueToAdd = new MetricValue();
         metricValueToAdd.setMetricId(id);
-        
-        metricValueToAdd.setValue(-100D);
+        metricValueToAdd.setValue(Double.MIN_VALUE);
         sendMetricValue(metricValueToAdd, status().isOk());
         metricValueToAdd.setValue(-10D);
         sendMetricValue(metricValueToAdd, status().isOk());
@@ -119,9 +120,10 @@ public class MetricsTest {
         sendMetricValue(metricValueToAdd, status().isOk());
         metricValueToAdd.setValue(10D);
         sendMetricValue(metricValueToAdd, status().isOk());
-        metricValueToAdd.setValue(100D);
+        metricValueToAdd.setValue(Double.MAX_VALUE);
         sendMetricValue(metricValueToAdd, status().isOk());
         
+        //tests the results
         mockMvc.perform(get("/getStatistics/"+id)).andExpect(status().isOk());
     }
     
@@ -140,10 +142,8 @@ public class MetricsTest {
         metricToAdd.setUnits(null);
         metricToAdd.setName("Test Metric");
         sendMetric(metricToAdd, status().isBadRequest());
-        
         metricToAdd.setUnits("");
         sendMetric(metricToAdd, status().isBadRequest());
-        
         metricToAdd.setUnits("Reallllllllllllllllllllllllllllly long unit name");
         sendMetric(metricToAdd, status().isBadRequest());
         
@@ -151,10 +151,8 @@ public class MetricsTest {
         metricToAdd.setName(null);
         metricToAdd.setUnits("Test Units");
         sendMetric(metricToAdd, status().isBadRequest());
-        
         metricToAdd.setName("");
         sendMetric(metricToAdd, status().isBadRequest());
-        
         metricToAdd.setName("Reallllllllllllllllllllllllllllllllllly long name");
         sendMetric(metricToAdd, status().isBadRequest());
     }
@@ -166,11 +164,29 @@ public class MetricsTest {
      */
     @Test
     public void addBadMetricValuesTest() throws Exception{
+        
+        //tests with invalid metric id values
         MetricValue metricValueToAdd = new MetricValue();
         sendMetricValue(metricValueToAdd, status().isBadRequest());
+        metricValueToAdd.setValue(100D);
+        sendMetricValue(metricValueToAdd, status().isBadRequest());
         
-        //TODO
+        //builds a valid metric for testing
+        Metric metricToAdd = new Metric();
+        metricToAdd.setName("Test Metric");
+        metricToAdd.setUnits("Test Units");
+        Long validID = sendMetricGetResult(metricToAdd).getId();
         
+        //tests with bad values
+        metricValueToAdd.setMetricId(validID);
+        metricValueToAdd.setValue(null);
+        sendMetricValue(metricValueToAdd, status().isBadRequest());
+        metricValueToAdd.setValue(Double.NEGATIVE_INFINITY);
+        sendMetricValue(metricValueToAdd, status().isBadRequest());
+        metricValueToAdd.setValue(Double.POSITIVE_INFINITY);
+        sendMetricValue(metricValueToAdd, status().isBadRequest());
+        metricValueToAdd.setValue(Double.NaN);
+        sendMetricValue(metricValueToAdd, status().isBadRequest());
     }
     
     /* Testing Helpers */
@@ -178,7 +194,6 @@ public class MetricsTest {
     /**
      * 
      * @param metric
-     * @param result
      * @return
      * @throws Exception 
      */
