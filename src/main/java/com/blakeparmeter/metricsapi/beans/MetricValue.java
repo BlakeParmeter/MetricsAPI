@@ -12,6 +12,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.validator.constraints.NotBlank;
 
 /**
  *
@@ -24,8 +25,9 @@ public class MetricValue {
     @Id @GeneratedValue(strategy=GenerationType.AUTO)
     private Long id;
     
-    @ManyToOne
-    private Metric metric;
+    @NotBlank(message = "You must specify a metric")
+    private Long metricId;
     
+    @NotBlank(message = "The value cannot be empty")
     private double value;
 }

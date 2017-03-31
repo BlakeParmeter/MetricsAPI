@@ -6,7 +6,11 @@
 package com.blakeparmeter.metricsapi.controllers;
 
 import com.blakeparmeter.metricsapi.beans.Metric;
+import com.blakeparmeter.metricsapi.beans.MetricValue;
+import com.blakeparmeter.metricsapi.beans.Statistics;
 import com.blakeparmeter.metricsapi.repository.MetricRepository;
+import com.blakeparmeter.metricsapi.repository.MetricValueRepository;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
@@ -17,12 +21,27 @@ import org.springframework.stereotype.Controller;
 @Controller
 public class MetricController {
     
-    //@Autowired 
-    //MetricRepository metricRepo;
+    @Autowired 
+    MetricRepository metricRepo;
+    
+    @Autowired 
+    MetricValueRepository metricValueRepo;
     
     public Metric addMetric(Metric metric){
-        System.out.println("Adding a metric!");
-        return metric;
-        //return metricRepo.save(metric);
+        return metricRepo.save(metric);
+    }
+
+    public MetricValue addMetricValue(MetricValue record) {
+        return metricValueRepo.save(record);
+    }
+
+    public Statistics getStatistics(Long metricId) {
+        if(metricRepo.findById(metricId) == null){
+            throw new RuntimeException("The metric: "+metricId+" cannot be found.");
+        }
+        List<MetricValue> metricValues = metricValueRepo.getByMetricId(metricId);
+        Statistics stats = new Statistics();
+        
+        return stats;
     }
 }

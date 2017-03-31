@@ -6,13 +6,16 @@
 package com.blakeparmeter.metricsapi.api;
 
 import com.blakeparmeter.metricsapi.beans.Metric;
+import com.blakeparmeter.metricsapi.beans.MetricValue;
 import com.blakeparmeter.metricsapi.controllers.MetricController;
-import com.blakeparmeter.metricsapi.repository.MetricRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -27,22 +30,25 @@ public class MetricAPI {
     @Autowired 
     private MetricController metricController;
     
-    @RequestMapping("/addMetric")
-    public ResponseEntity<?> addMetric(@RequestBody Metric record){
-        if(record.getName() == null || record.getName().isEmpty()){
-            return ResponseEntity.badRequest().body("The name is required and cannot be empty.");
-        }
-        if(record.getUnits()== null || record.getUnits().isEmpty()){
-            return ResponseEntity.badRequest().body("The name is required and cannot be empty.");
-        }
-        metricController.addMetric(record);
-        return ResponseEntity.ok().build();
+    @RequestMapping(value="/addMetric", method=RequestMethod.POST)
+    public ResponseEntity<?> addMetric(@Validated @RequestBody Metric record){
+        Metric metricAdded = metricController.addMetric(record);
+        return ResponseEntity.ok("Metric #:" +metricAdded.getId() + " has been added to the database");
     }
     
-    @RequestMapping("/test")
-    public ResponseEntity<?> test(){
-        System.out.println("Reciving test message...");
-        return ResponseEntity.ok("test");
+    @RequestMapping(value="/addMetricValue", method=RequestMethod.POST)
+    public ResponseEntity<?> addMetricValue(@Validated @RequestBody MetricValue record){
+        MetricValue metricAdded = metricController.addMetricValue(record);
+        return ResponseEntity.ok("Metric value#:" +metricAdded.getId() + " has been added to the database");
+    }
+    
+    @RequestMapping(value="/getStatistics/{metricId}", method=RequestMethod.GET)
+    public ResponseEntity<?> getStatistics(@PathVariable Long metricId){
+        try{
+            return ResponseEntity.ok(metricController.getStatistics(metricId));
+        }catch(Exception ex){
+            return ResponseEntity.badRequest().body(ex);
+        }
     }
 }
     

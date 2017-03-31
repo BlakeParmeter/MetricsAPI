@@ -5,16 +5,15 @@
  */
 package com.blakeparmeter.metricsapi.repository;
 
-import com.blakeparmeter.metricsapi.beans.Metric;
+import com.blakeparmeter.metricsapi.beans.MetricValue;
+import java.util.List;
 import org.springframework.data.repository.Repository;
 
 /**
  *
  * @author Blake
  */
-public interface MetricRepository extends Repository<Metric, Long>{
-    
-    Metric findById(Long id);
-    Metric save(Metric metric);
+public interface MetricValueRepository extends Repository<MetricValue, Long>{
+    MetricValue save(MetricValue metric);
+    public List<MetricValue> getByMetricId(Long metricId);
 }
-
