@@ -21,11 +21,11 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultMatcher;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 
 /**
  *
@@ -63,7 +63,7 @@ public class MetricsTest {
     /* Sunny day scenario tests */
     
     /**
-     * Adds a valid metric
+     * Adds a valid metric 
      * @throws Exception 
      */
     @Test
@@ -72,6 +72,30 @@ public class MetricsTest {
         metricToAdd.setName("Test Metric");
         metricToAdd.setUnits("Test Units");
         sendMetric(metricToAdd, status().isOk());
+    }
+    
+    /**
+     * Adds valid metric values
+     * @throws Exception 
+     */
+    @Test
+    public void addValidMetricValues() throws Exception{
+        MetricValue metricValueToAdd = new MetricValue();
+        metricValueToAdd.setMetricId(1L);
+        
+        for(int i = -100; i < 100; i++){
+            metricValueToAdd.setValue(Math.pow(i, 3));
+            sendMetricValue(metricValueToAdd, status().isOk());
+        }
+    }
+    
+    /**
+     * Gets the statistics for the metric
+     * @throws Exception 
+     */
+    @Test
+    public void getValidStatistics() throws Exception{
+        mockMvc.perform(get("/getStatistics/1")).andExpect(status().isOk());
     }
     
     /* Bad request Scenario tests */
@@ -124,7 +148,7 @@ public class MetricsTest {
      * @throws Exception 
      */
     private void sendMetricValue(MetricValue metric, ResultMatcher result) throws Exception{
-        mockMvc.perform(post("/addMetric")
+        mockMvc.perform(post("/addMetricValue")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(metric)))
                 .andExpect(result);

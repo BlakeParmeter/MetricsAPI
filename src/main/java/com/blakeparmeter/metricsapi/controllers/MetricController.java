@@ -11,6 +11,7 @@ import com.blakeparmeter.metricsapi.beans.Statistics;
 import com.blakeparmeter.metricsapi.repository.MetricRepository;
 import com.blakeparmeter.metricsapi.repository.MetricValueRepository;
 import java.util.List;
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
@@ -39,9 +40,20 @@ public class MetricController {
         if(metricRepo.findById(metricId) == null){
             throw new RuntimeException("The metric: "+metricId+" cannot be found.");
         }
-        List<MetricValue> metricValues = metricValueRepo.getByMetricId(metricId);
-        Statistics stats = new Statistics();
         
-        return stats;
+        //determine the statistics using statistics library
+        List<MetricValue> metricValues = metricValueRepo.getByMetricId(metricId);
+        DescriptiveStatistics stats = new DescriptiveStatistics();
+        for(MetricValue value : metricValues){
+            stats.addValue(value.getValue());
+        }
+        
+        //create object to return 
+        Statistics retVal = new Statistics();
+        retVal.setMax(stats.getMax());
+        retVal.setMin(stats.getMin());
+        retVal.setMean(stats.getMean());
+        retVal.setMedian(stats.getPercentile(50));
+        return retVal;
     }
 }
