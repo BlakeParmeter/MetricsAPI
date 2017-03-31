@@ -20,6 +20,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -49,6 +50,8 @@ public class MetricsTest {
         mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
     }
     
+    /* Sunny day scenario tests */
+    
     /**
      * Pings all the endpoints, some require data so expect invalid requests (400)
      * @throws Exception 
@@ -57,10 +60,8 @@ public class MetricsTest {
     public void pingTest() throws Exception{
         mockMvc.perform(post("/addMetric")).andExpect(status().isBadRequest());
         mockMvc.perform(post("/addMetricValue")).andExpect(status().isBadRequest());
-        mockMvc.perform(get("/getStatistics/1")).andExpect(status().isBadRequest());
+        mockMvc.perform(get("/getStatistics/NotANum")).andExpect(status().isBadRequest());
     }
-    
-    /* Sunny day scenario tests */
     
     /**
      * Adds a valid metric 
@@ -80,8 +81,14 @@ public class MetricsTest {
      */
     @Test
     public void addValidMetricValues() throws Exception{
+        
+        Metric metricToAdd = new Metric();
+        metricToAdd.setName("Test Metric");
+        metricToAdd.setUnits("Test Units");
+        Long id = sendMetricGetResult(metricToAdd).getId();
+        
         MetricValue metricValueToAdd = new MetricValue();
-        metricValueToAdd.setMetricId(1L);
+        metricValueToAdd.setMetricId(id);
         
         for(int i = -100; i < 100; i++){
             metricValueToAdd.setValue(Math.pow(i, 3));
@@ -95,7 +102,27 @@ public class MetricsTest {
      */
     @Test
     public void getValidStatistics() throws Exception{
-        mockMvc.perform(get("/getStatistics/1")).andExpect(status().isOk());
+        
+        Metric metricToAdd = new Metric();
+        metricToAdd.setName("Test Metric");
+        metricToAdd.setUnits("Test Units");
+        Long id = sendMetricGetResult(metricToAdd).getId();
+        
+        MetricValue metricValueToAdd = new MetricValue();
+        metricValueToAdd.setMetricId(id);
+        
+        metricValueToAdd.setValue(-100D);
+        sendMetricValue(metricValueToAdd, status().isOk());
+        metricValueToAdd.setValue(-10D);
+        sendMetricValue(metricValueToAdd, status().isOk());
+        metricValueToAdd.setValue(0D);
+        sendMetricValue(metricValueToAdd, status().isOk());
+        metricValueToAdd.setValue(10D);
+        sendMetricValue(metricValueToAdd, status().isOk());
+        metricValueToAdd.setValue(100D);
+        sendMetricValue(metricValueToAdd, status().isOk());
+        
+        mockMvc.perform(get("/getStatistics/"+id)).andExpect(status().isOk());
     }
     
     /* Bad request Scenario tests */
@@ -132,19 +159,54 @@ public class MetricsTest {
         sendMetric(metricToAdd, status().isBadRequest());
     }
     
+    
+    /**
+     * Tests all cases of bad metrics being added into the system.
+     * @throws java.lang.Exception
+     */
+    @Test
+    public void addBadMetricValuesTest() throws Exception{
+        MetricValue metricValueToAdd = new MetricValue();
+        sendMetricValue(metricValueToAdd, status().isBadRequest());
+        
+        //TODO
+        
+    }
+    
     /* Testing Helpers */
     
     /**
+     * 
+     * @param metric
+     * @param result
+     * @return
      * @throws Exception 
      */
-    private void sendMetric(Metric metric, ResultMatcher result) throws Exception{
-        mockMvc.perform(post("/addMetric")
+    private Metric sendMetricGetResult(Metric metric) throws Exception{
+        ResultActions action = sendMetric(metric, status().isOk());
+        String response = action.andReturn().getResponse().getContentAsString();
+        return objectMapper.readValue(response, Metric.class);
+    }
+    
+    /**
+     * 
+     * @param metric
+     * @param result
+     * @return
+     * @throws Exception 
+     */
+    private ResultActions sendMetric(Metric metric, ResultMatcher result) throws Exception{
+        return mockMvc.perform(post("/addMetric")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(metric)))
                 .andExpect(result);
     }
     
     /**
+     * 
+     * @param metric
+     * @param result
+     * @return
      * @throws Exception 
      */
     private void sendMetricValue(MetricValue metric, ResultMatcher result) throws Exception{

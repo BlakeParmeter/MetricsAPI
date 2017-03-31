@@ -33,6 +33,9 @@ public class MetricController {
     }
 
     public MetricValue addMetricValue(MetricValue record) {
+        if(metricRepo.findById(record.getMetricId()) == null){
+            throw new RuntimeException("The metric: "+record.getMetricId()+" cannot be found. The value will not be added.");
+        }
         return metricValueRepo.save(record);
     }
 

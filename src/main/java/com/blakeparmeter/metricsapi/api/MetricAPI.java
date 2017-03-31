@@ -33,13 +33,13 @@ public class MetricAPI {
     @RequestMapping(value="/addMetric", method=RequestMethod.POST)
     public ResponseEntity<?> addMetric(@Validated @RequestBody Metric record){
         Metric metricAdded = metricController.addMetric(record);
-        return ResponseEntity.ok("Metric #:" +metricAdded.getId() + " has been added to the database");
+        return ResponseEntity.ok(metricAdded);
     }
     
     @RequestMapping(value="/addMetricValue", method=RequestMethod.POST)
     public ResponseEntity<?> addMetricValue(@Validated @RequestBody MetricValue record){
         MetricValue metricAdded = metricController.addMetricValue(record);
-        return ResponseEntity.ok("Metric value#:" +metricAdded.getId() + " has been added to the database");
+        return ResponseEntity.ok(metricAdded);
     }
     
     @RequestMapping(value="/getStatistics/{metricId}", method=RequestMethod.GET)
